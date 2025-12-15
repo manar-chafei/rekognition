@@ -10,20 +10,25 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # Step 1: Checkout repository
       - uses: actions/checkout@v2
 
+      # Step 2: Install dependencies in the repo root
       - name: Install dependencies
+        working-directory: ./  # adjust if package.json is in a subfolder
         run: npm install
 
+      # Step 3: Deploy files to EC2
       - name: Deploy to AWS EC2
         uses: appleboy/scp-action@master
         with:
           host: ${{ secrets.REMOTE_HOST }}
           username: ${{ secrets.REMOTE_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-          source: "./" # This now correctly points to the current directory
-          target: "/var/www/your_project_directory"
+          source: "./"               # repository root
+          target: "/var/www/rekognition"
 
+      # Step 4: Restart PM2 application on EC2
       - name: Restart PM2 application
         uses: appleboy/ssh-action@master
         with:
@@ -32,4 +37,5 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
             cd /var/www/rekognition
-            pm2 reload all
+            npm install               # ensure dependencies are installed on EC2
+            pm2 reload ecosystem.config.js
