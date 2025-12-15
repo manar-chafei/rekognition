@@ -26,7 +26,7 @@ jobs:
           username: ${{ secrets.REMOTE_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           source: "./"               # repository root
-          target: "/var/www/rekognition"
+          target: "/var/www/rekognition/rekognition"
 
       # Step 4: Restart PM2 application on EC2
       - name: Restart PM2 application
@@ -36,6 +36,6 @@ jobs:
           username: ${{ secrets.REMOTE_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
-            cd /var/www/rekognition
+            cd /var/www/rekognition/rekognition
             npm install               # ensure dependencies are installed on EC2
             pm2 reload ecosystem.config.js
